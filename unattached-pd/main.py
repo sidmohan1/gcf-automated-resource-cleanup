@@ -65,12 +65,12 @@ def delete_unattached_pds(request):
                     # lastAttachedTimestamp is not present
                     try:
                         if disk['lastAttachTimestamp'] is None:
-                            print ("none!")
+                            print ("lastAttachTimestamp was none!")
                     except KeyError:
                         print ("disk " + diskName + " was never attached - deleting")
-                        deleteRequest = compute.disks().delete(project=project, zone=diskZone, disk=diskName)
-                        deleteResponse = deleteRequest.execute()
-                        waitForZoneOperation(deleteResponse, project, diskZone)
+                        # deleteRequest = compute.disks().delete(project=project, zone=diskZone, disk=diskName)
+                        # deleteResponse = deleteRequest.execute()
+                        # waitForZoneOperation(deleteResponse, project, diskZone)
                         print ("disk " + diskName + " was deleted")
                         continue
 
@@ -102,9 +102,9 @@ def delete_unattached_pds(request):
 
                             # delete the disk
                             print ("deleting disk " + diskName)
-                            deleteRequest = compute.disks().delete(project=project, zone=diskZone, disk=diskName)
-                            deleteResponse = deleteRequest.execute()
-                            waitForZoneOperation(deleteResponse, project, diskZone)
+                            # deleteRequest = compute.disks().delete(project=project, zone=diskZone, disk=diskName)
+                            # deleteResponse = deleteRequest.execute()
+                            # waitForZoneOperation(deleteResponse, project, diskZone)
                             print ("disk " + diskName + " was deleted")
                             continue
 
