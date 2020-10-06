@@ -12,7 +12,7 @@
 # for execution in Cloud Functions Python 3.7.1
 
 # modify these variables for your environment:
-project = 'automating-cost-optimization'
+project = 'managed-gcp'
 authorizedUsername = "postman"
 authorizedPassword = "postman"
 
