@@ -15,6 +15,7 @@
 project = 'managed-gcp'
 authorizedUsername = "postman"
 authorizedPassword = "postman"
+bucket_name="testbucketsidharth"
 
 # imports
 import datetime
@@ -30,7 +31,9 @@ from flask import request
 from flask import Flask
 from flask import escape
 from basicauth import decode
+from google.cloud import storage
 import pytz
+
 
 # initialize global
 compute = googleapiclient.discovery.build('compute', 'v1')
@@ -46,10 +49,28 @@ def waitForZoneOperation(operationResponse, project, zone):
         status = checkResponse["status"]
         time.sleep(3)
 
+def create_bucket_class_location(bucket_name):
+    """Create a new bucket in specific location with storage class"""
+    # bucket_name = "your-new-bucket-name"
+
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+    bucket.storage_class = "COLDLINE"
+    new_bucket = storage_client.create_bucket(bucket, location="us")
+
+    print(
+        "Created bucket {} in {} with storage class {}".format(
+            new_bucket.name, new_bucket.location, new_bucket.storage_class
+        )
+    )
+    return new_bucket
+
 # main function
 def delete_unattached_pds(request):
     # get list of disks and iterate through it:
     disksRequest = compute.disks().aggregatedList(project=project)
+    bucketName = create_bucket_class_location(bucket_name)
     while disksRequest is not None:
         diskResponse = disksRequest.execute()
         for name, disks_scoped_list in diskResponse['items'].items():
