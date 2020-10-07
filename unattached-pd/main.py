@@ -15,7 +15,6 @@
 project = 'managed-gcp'
 authorizedUsername = "postman"
 authorizedPassword = "postman"
-bucket_name="testbucketsidharth"
 
 # imports
 import datetime
@@ -31,9 +30,7 @@ from flask import request
 from flask import Flask
 from flask import escape
 from basicauth import decode
-from google.cloud import storage
 import pytz
-
 
 # initialize global
 compute = googleapiclient.discovery.build('compute', 'v1')
@@ -49,28 +46,10 @@ def waitForZoneOperation(operationResponse, project, zone):
         status = checkResponse["status"]
         time.sleep(3)
 
-def create_bucket_class_location(bucket_name):
-    """Create a new bucket in specific location with storage class"""
-    # bucket_name = "your-new-bucket-name"
-
-    storage_client = storage.Client()
-
-    bucket = storage_client.bucket(bucket_name)
-    bucket.storage_class = "COLDLINE"
-    new_bucket = storage_client.create_bucket(bucket, location="us")
-
-    print(
-        "Created bucket {} in {} with storage class {}".format(
-            new_bucket.name, new_bucket.location, new_bucket.storage_class
-        )
-    )
-    return new_bucket
-
 # main function
 def delete_unattached_pds(request):
     # get list of disks and iterate through it:
     disksRequest = compute.disks().aggregatedList(project=project)
-    bucketName = create_bucket_class_location(bucket_name)
     while disksRequest is not None:
         diskResponse = disksRequest.execute()
         for name, disks_scoped_list in diskResponse['items'].items():
@@ -86,12 +65,12 @@ def delete_unattached_pds(request):
                     # lastAttachedTimestamp is not present
                     try:
                         if disk['lastAttachTimestamp'] is None:
-                            print ("lastAttachTimestamp was none!")
+                            print ("none!")
                     except KeyError:
                         print ("disk " + diskName + " was never attached - deleting")
-                        # deleteRequest = compute.disks().delete(project=project, zone=diskZone, disk=diskName)
-                        # deleteResponse = deleteRequest.execute()
-                        # waitForZoneOperation(deleteResponse, project, diskZone)
+#                         deleteRequest = compute.disks().delete(project=project, zone=diskZone, disk=diskName)
+#                         deleteResponse = deleteRequest.execute()
+#                         waitForZoneOperation(deleteResponse, project, diskZone)
                         print ("disk " + diskName + " was deleted")
                         continue
 
@@ -116,16 +95,16 @@ def delete_unattached_pds(request):
                             snapshotBody = {
                                 "name": snapShotName
                             }
-                            snapshotRequest = compute.disks().createSnapshot(project=project, zone=diskZone, disk=diskName, body=snapshotBody)
-                            snapshotResponse = snapshotRequest.execute()
-                            waitForZoneOperation(snapshotResponse, project, diskZone)
+#                             snapshotRequest = compute.disks().createSnapshot(project=project, zone=diskZone, disk=diskName, body=snapshotBody)
+#                             snapshotResponse = snapshotRequest.execute()
+#                             waitForZoneOperation(snapshotResponse, project, diskZone)
                             print ("snapshot completed")
 
                             # delete the disk
-                            print ("deleting disk " + diskName)
-                            # deleteRequest = compute.disks().delete(project=project, zone=diskZone, disk=diskName)
-                            # deleteResponse = deleteRequest.execute()
-                            # waitForZoneOperation(deleteResponse, project, diskZone)
+#                             print ("deleting disk " + diskName)
+#                             deleteRequest = compute.disks().delete(project=project, zone=diskZone, disk=diskName)
+#                             deleteResponse = deleteRequest.execute()
+#                             waitForZoneOperation(deleteResponse, project, diskZone)
                             print ("disk " + diskName + " was deleted")
                             continue
 
